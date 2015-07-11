@@ -72,7 +72,12 @@ class TestWunderground(unittest.TestCase):
             
         for feature in ['alerts', 'hourly', 'hourly10day', 'webcams']:
             self.assertEqual(type(getattr(self.wg['Munich, Germany'], feature)), list)
-                
+    
+    def test_history_feature(self):
+        self.assertEqual(type(self.wg['Munich, Germany'].history['2015.01.01']), dict)
+        self.assertEqual(type(self.wg['Munich, Germany'].history['2015.01.01', '2015.01.03', '2015.01.05']), list)
+        self.assertEqual(self.wg['Munich, Germany'].history['2015.01.01'], self.wg['Munich, Germany'].history['2015.01.01', '2015.01.03', '2015.01.05'][0])
+        self.assertEqual(self.wg['Munich, Germany'].history['2015.01.01'], self.wg['Munich, Germany'].history['2014.12.31':'2015.01.02'][1])                
 
 if __name__ == '__main__':
     unittest.main()

@@ -68,6 +68,7 @@ class Location:
     def __init__(self, data, api):
         self.__dict__ = data
         self.API = api
+        self.history = History(self.l, self.API)
     
     def __getattr__(self, key):
         if key in ['alerts', 'almanac', 'astronomy', 'conditions', 'forecast', 'forecast10day', 'hourly', 'hourly10day', 'rawtide', 'satellite', 'tide', 'webcams']:
@@ -85,3 +86,51 @@ class Location:
             return data[key]
         else:
             raise AttributeError
+
+class History:
+    def __init__(self, link, api):
+        self.l = link
+        self.API = api
+        
+    def __getitem__(self, key):
+        if type(key) is str:
+            try:
+                day = datetime.datetime.strptime(key, "%Y.%m.%d")
+                return self._getWeatherForDay(day)
+            except ValueError:
+                raise KeyError
+        elif type(key) is slice:
+            try:
+                start = datetime.datetime.strptime(key.start, "%Y.%m.%d")
+                stop = datetime.datetime.strptime(key.stop, "%Y.%m.%d")
+                result = []
+                for day in self._daterange(start, stop):
+                    result.append(self._getWeatherForDay(day))
+                
+                return result
+            except ValueError:
+                raise KeyError
+        elif type(key) is tuple:
+            result = []
+            for d in key:
+                try:
+                    day = datetime.datetime.strptime(d, "%Y.%m.%d")
+                except ValueError:
+                    raise KeyError
+                result.append(self._getWeatherForDay(day))
+            return result
+            
+    def _daterange(self, startDate, endDate):
+        for n in range(int ((endDate - startDate).days)):
+            yield startDate + datetime.timedelta(n)
+    
+    def _getWeatherForDay(self, day):
+        now = datetime.datetime.now()
+        if datetime.datetime(day.year, day.month, day.day) > now:
+            raise KeyError
+            
+        if day.year == now.year and day.month == now.month and day.day == now.day:
+            return json.loads(cache.urlopen(self.API.API_BASE_URL+self.API.API_KEY+"/history_"+datetime.datetime.strftime(day, "%Y%m%d")+self.l+"."+self.API.API_FORMAT))['history']
+        else:
+            return json.loads(cache.urlopen(self.API.API_BASE_URL+self.API.API_KEY+"/history_"+datetime.datetime.strftime(day, "%Y%m%d")+self.l+"."+self.API.API_FORMAT, self.API.CACHE_PATH))['history']
+    
