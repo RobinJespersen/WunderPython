@@ -39,7 +39,23 @@ class Wunderground:
     def __init__(self, api_key, cache_path=CACHE_PATH):
         self.API_KEY= api_key
         self.CACHE_PATH = cache_path
-        
+    
+    def __getitem__(self, key):
+        if type(key) is str:
+            data = json.loads(cache.urlopen(self.API_AUTOCOMPLETE_URL+"?query="+urllib.quote(key), self.CACHE_PATH))['RESULTS']
+            if len(data) != 1:
+                raise KeyError
+            return Location(data[0], self);
+                
+        elif type(key) is tuple:
+            results = []
+            for city in key:
+                data = json.loads(cache.urlopen(self.API_AUTOCOMPLETE_URL+"?query="+urllib.quote(city), self.CACHE_PATH))['RESULTS']
+                if len(data) != 1:
+                    raise KeyError
+                results.append(Location(data[0], self));
+            return results
+    
     def search(self, q):
         data = json.loads(cache.urlopen(self.API_AUTOCOMPLETE_URL+"?query="+urllib.quote(q), self.CACHE_PATH))['RESULTS']
         result=[]
@@ -48,4 +64,7 @@ class Wunderground:
         return result
 
 
-
+class Location:
+    def __init__(self, data, api):
+        self.__dict__ = data
+        self.API = api

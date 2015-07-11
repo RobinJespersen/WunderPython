@@ -60,6 +60,11 @@ class TestWunderground(unittest.TestCase):
         self.assertTrue(type(self.wg.search(''))==list)
         self.assertTrue(len(self.wg.search('not a name of a place')) == 0)
         self.assertTrue(len(self.wg.search('Munich, Germany')) == 1)
+        
+    def test_location(self):
+        self.assertEqual(self.wg['Munich, Germany'].name, 'Munich, Germany')
+        self.assertEqual(type(self.wg['Munich, Germany', 'Berlin, Germany', 'Hamburg, Germany']), list)
+        self.assertEqual(self.wg['Munich, Germany'].ll, '48.130001 11.700000')
                 
 
 if __name__ == '__main__':
