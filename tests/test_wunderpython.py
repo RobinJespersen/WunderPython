@@ -28,6 +28,7 @@ import sys, os, shutil, unittest, urllib2
 sys.path[0:0] = [os.path.join(os.path.dirname(__file__), ".."),]
 
 from wunderpython import stupidcache
+from wunderpython import wunderground
 
 class TestStupidCache(unittest.TestCase):
     cacheFolder = './cache/folder/'
@@ -50,6 +51,15 @@ class TestStupidCache(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(self.cacheFolder):
             shutil.rmtree(self.cacheBaseFolder)
+            
+class TestWunderground(unittest.TestCase):
+    wg = wunderground.Wunderground('no_valid_key')
+    
+    def test_search(self):
+        self.assertTrue(len(self.wg.search('')) == 20)
+        self.assertTrue(type(self.wg.search(''))==list)
+        self.assertTrue(len(self.wg.search('not a name of a place')) == 0)
+        self.assertTrue(len(self.wg.search('Munich, Germany')) == 1)
                 
 
 if __name__ == '__main__':
