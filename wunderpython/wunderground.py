@@ -68,3 +68,20 @@ class Location:
     def __init__(self, data, api):
         self.__dict__ = data
         self.API = api
+    
+    def __getattr__(self, key):
+        if key in ['alerts', 'almanac', 'astronomy', 'conditions', 'forecast', 'forecast10day', 'hourly', 'hourly10day', 'rawtide', 'satellite', 'tide', 'webcams']:
+            data = json.loads(cache.urlopen(self.API.API_BASE_URL+self.API.API_KEY +"/"+key+self.l+"."+self.API.API_FORMAT))
+            if 'response' in data and 'error' in data['response'] and data['response']['error']['type'] == 'keynotfound':
+                raise KeyError('keynotfound')
+            if key in ['forecast10day']:
+                return data['forecast']
+            if key in ['astronomy']:
+                return data
+            if key in ['conditions']:
+                return data['current_observation']
+            if key in ['hourly', 'hourly10day']:
+                return data['hourly_forecast']
+            return data[key]
+        else:
+            raise AttributeError

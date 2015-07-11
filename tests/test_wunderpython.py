@@ -65,6 +65,13 @@ class TestWunderground(unittest.TestCase):
         self.assertEqual(self.wg['Munich, Germany'].name, 'Munich, Germany')
         self.assertEqual(type(self.wg['Munich, Germany', 'Berlin, Germany', 'Hamburg, Germany']), list)
         self.assertEqual(self.wg['Munich, Germany'].ll, '48.130001 11.700000')
+        
+    def test_features(self):
+        for feature in ['almanac', 'astronomy', 'conditions', 'forecast', 'forecast10day', 'rawtide', 'satellite', 'tide']:
+            self.assertEqual(type(getattr(self.wg['Munich, Germany'], feature)), dict)
+            
+        for feature in ['alerts', 'hourly', 'hourly10day', 'webcams']:
+            self.assertEqual(type(getattr(self.wg['Munich, Germany'], feature)), list)
                 
 
 if __name__ == '__main__':
