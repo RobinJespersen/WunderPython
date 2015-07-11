@@ -14,7 +14,14 @@ Create an instance of the API wrapper
 
 ##Examples
 
-#Tests
-You can run the tests with
+##Tests
+Before running the tests you have to replace `no_valid_key` with your API Key in `tests/test_wunderpython.py`
+
+Then you can run the tests with:
     
     python tests/test_wunderpython.py
+    
+
+##Note
+* [Terms of Service](http://www.wunderground.com/weather/api/d/terms.html)
+* Developed with API Version 0.1.
