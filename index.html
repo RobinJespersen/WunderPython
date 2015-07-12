@@ -33,10 +33,15 @@
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>Create an instance of the API wrapper</p>
+<p><strong>Create an instance of the API wrapper</strong></p>
 
 <pre><code>from wunderpython import wunderground as w
 wg = w.Wunderground("your secret api key")
+</code></pre>
+
+<p><strong>Search for a location</strong> </p>
+
+<pre><code>results = wg.search('Munich')
 </code></pre>
 
 <h2>
