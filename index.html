@@ -24,11 +24,20 @@
 
 <p>WunderPython is an API wrapper for the <a href="http://www.wunderground.com/weather/api/">Wunderground API</a>.</p>
 
+<p>At the moment the following features are supported <code>'alerts', 'almanac', 'astronomy', 'conditions', 'forecast', 'forecast10day', 'history', 'hourly', 'hourly10day', 'rawtide', 'satellite', 'tide', 'webcams'</code></p>
+
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
 <pre><code>pip install --pre WunderPython
 </code></pre>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>A Wunderground API key.</li>
+</ul>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
@@ -39,9 +48,14 @@
 wg = w.Wunderground("your secret api key")
 </code></pre>
 
-<p><strong>Search for a location</strong> </p>
+<p><strong>Query for a location</strong> </p>
 
 <pre><code>results = wg.search('Munich')
+</code></pre>
+
+<p>*<em>Get information about a location *</em></p>
+
+<pre><code>results = wg['Munich, Germany'].ll
 </code></pre>
 
 <h2>
