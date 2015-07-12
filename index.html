@@ -27,13 +27,7 @@
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
-<pre><code>#TODO
-</code></pre>
-
-<h2>
-<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
-
-<pre><code>#TODO
+<pre><code>pip install --pre WunderPython
 </code></pre>
 
 <h2>
@@ -41,7 +35,8 @@
 
 <p>Create an instance of the API wrapper</p>
 
-<pre><code>wg = Wunderground("your secret api key")
+<pre><code>from wunderpython import wunderground as w
+wg = w.Wunderground("your secret api key")
 </code></pre>
 
 <h2>
