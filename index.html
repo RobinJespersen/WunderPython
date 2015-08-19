@@ -5,7 +5,7 @@
     <title>WunderPython by RobinJespersen</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
@@ -24,92 +24,115 @@
 
 <p>WunderPython is an API wrapper for the <a href="http://www.wunderground.com/weather/api/">Wunderground API</a>.</p>
 
-<p>At the moment the following data features are supported:</p>
-
-<ul>
-<li>alerts</li>
-<li>almanac</li>
-<li>astronomy</li>
-<li>conditions</li>
-<li>forecast</li>
-<li>forecast10day</li>
-<li>history</li>
-<li>hourly</li>
-<li>hourly10day</li>
-<li>rawtide</li>
-<li>satellite</li>
-<li>tide</li>
-<li>webcams</li>
-</ul>
-
-<p>Not yet supported:</p>
-
-<ul>
-<li>currenthurricane</li>
-<li>geolookup</li>
-<li>planner</li>
-<li>yesterday</li>
-</ul>
-
-<p>Layers are also not yet supported.</p>
-
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
-<pre><code>pip install --pre WunderPython
+<pre><code>$ pip install WunderPython --pre
 </code></pre>
+
+<p>The '--pre' option is requierd because there is currently no version marked as stable.</p>
 
 <h2>
 <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h2>
 
-<ul>
-<li>A Wunderground API key. <a href="http://www.wunderground.com/weather/api">Get one here</a>
-</li>
-</ul>
+<pre><code>Python 2
+</code></pre>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p><strong>Create an instance of the API wrapper</strong></p>
+<p>Import the library</p>
 
-<pre><code>from wunderpython import wunderground as w
-wg = w.Wunderground("your secret api key")
+<pre><code>&gt;&gt;&gt; from wunderpython import wunderground
 </code></pre>
 
-<p><strong>Query for a location</strong> </p>
+<p>Create an instance of the API wrapper</p>
 
-<pre><code>results = wg.search('Munich')
+<pre><code>&gt;&gt;&gt; wg = wunderground.Wunderground('your secret api key')
 </code></pre>
 
-<p><strong>Get information about a location</strong></p>
+<p>Find a location</p>
 
-<pre><code>print wg['Munich, Germany'].ll
+<pre><code>&gt;&gt;&gt; wg.search(’Munich, G’)
+[’Munich, Germany’, ’Munich, Grenada’]
 </code></pre>
 
-<p>Available location attributes are: <code>l, lat, ll, lon, name, type, tz, tzs, zmw</code>
-Furthermore you can access all features via attributes:</p>
+<p>Get a info about a location</p>
 
-<pre><code>alerts = wg['Munich, Germany'].alerts
+<pre><code>&gt;&gt;&gt; location = wg['Munich, Germany']
+&gt;&gt;&gt; location.name
+'Munich, Germany'
+&gt;&gt;&gt;
+&gt;&gt;&gt; # getting the latitude and longitude
+&gt;&gt;&gt; location.ll
+48.130001 11.700000
 </code></pre>
 
-<p>Only the history feature is a bit different because it needs additional parameters</p>
+<p>Get a data feature</p>
 
-<pre><code>historical_day = wg['Munich, Germany'].history['2014.05.23']
+<pre><code>&gt;&gt;&gt; conditions = location.conditions
+&gt;&gt;&gt; conditions[’temperature_string’]
+64 F (18 C)
 </code></pre>
 
-<p>will return the recordings for 23. May 2014.
-You can also use slices to get time ranges:</p>
+<p>Supported features are: ['alerts', 'almanac', 'astronomy', 'conditions', 'forecast', 'forecast10day', 'hourly', 'hourly10day', 'rawtide', 'satellite', 'tide', 'webcams']</p>
 
-<pre><code>historical_days = wg['Munich, Germany'].history['2014.05.23':'2014.05.29']
-</code></pre>
+<p>Access historical data</p>
 
-<p>Or get multiple individual days:</p>
-
-<pre><code>two_historical_days = wg['Munich, Germany'].history['2014.05.23', '2014.05.29']
+<pre><code>&gt;&gt;&gt; pastDay = location.history[’2009.06.23’]
+&gt;&gt;&gt; pastDay[’observations’][0][’tempi’]
+53.6
 </code></pre>
 
 <h2>
 <a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<p>Some examples that can be used in IPython Notebook.</p>
+
+<h3>
+<a id="compare-the-mean-temperature-of-several-cities" class="anchor" href="#compare-the-mean-temperature-of-several-cities" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compare the mean temperature of several cities</h3>
+
+<pre><code>from wunderpython import wunderground
+wg = wunderground.Wunderground('your secret api key')
+from pandas import *
+x = []
+ds = {}
+
+for city in wg['Munich, Germany', 'New York City, New York', 'Changde, China']:
+    ds[city.name] = []
+    for day in city.history['2014.06.01':'2014.07.01']:
+        dailysummary = day['dailysummary'][0]        
+        if dailysummary['date']['year']+'.'+dailysummary['date']['mon']+'.'+dailysummary['date']['mday'] not in x:
+            x.append(dailysummary['date']['year']+'.'+dailysummary['date']['mon']+'.'+dailysummary['date']['mday'])
+        ds[city.name].append(float(dailysummary['meantempm']))
+
+df = DataFrame(ds, x)
+print df.plot(rot = 90)
+</code></pre>
+
+<h3>
+<a id="compare-wind-and-pressure" class="anchor" href="#compare-wind-and-pressure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compare wind and pressure</h3>
+
+<pre><code>from wunderpython import wunderground
+wg = wunderground.Wunderground('your secret api key')
+from pandas import *
+x = []
+ds = {
+    'pressurem':[],
+    'wspdm':[],
+}
+
+
+for day in wg['Munich, Germany'].history['2014.05.02':'2014.05.05']:
+    for observation in day['observations']:
+        x.append(observation['date']['pretty'])
+        ds['pressurem'].append(float(observation['pressurem']))
+        ds['wspdm'].append(float(observation['wspdm']))
+
+df = DataFrame(ds, x)
+df.pressurem.plot(secondary_y=True)
+df.wspdm.plot(rot = 90)
+</code></pre>
 
 <h2>
 <a id="tests" class="anchor" href="#tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tests</h2>
@@ -126,8 +149,19 @@ You can also use slices to get time ranges:</p>
 
 <ul>
 <li><a href="http://www.wunderground.com/weather/api/d/terms.html">Terms of Service</a></li>
-<li>Developed with API Version 0.1.</li>
+<li>Developed with Wunderground API Version 0.1, Python 2.7 and IPython Notebook 3.0.</li>
 </ul>
+
+<p>Features not yet supported:</p>
+
+<ul>
+<li>currenthurricane</li>
+<li>geolookup</li>
+<li>planner</li>
+<li>yesterday</li>
+</ul>
+
+<p>Also WunderMap Layers are not yet supported.</p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/RobinJespersen/WunderPython">WunderPython</a> is maintained by <a href="https://github.com/RobinJespersen">RobinJespersen</a>.</span>
@@ -150,4 +184,3 @@ You can also use slices to get time ranges:</p>
 
   </body>
 </html>
-
