@@ -105,3 +105,11 @@ Then you can run the tests with:
 ##Note
 * [Terms of Service](http://www.wunderground.com/weather/api/d/terms.html)
 * Developed with Wunderground API Version 0.1, Python 2.7 and IPython Notebook 3.0.
+
+Features not yet supported:
+* currenthurricane
+* geolookup
+* planner
+* yesterday
+
+Also WunderMap Layers are not yet supported.
